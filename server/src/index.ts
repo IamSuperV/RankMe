@@ -3,13 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import router from './routes';
 
 dotenv.config();
-
-import authRoutes from './routes/authRoutes';
-import roomRoutes from './routes/roomRoutes';
-import benchmarkRoutes from './routes/benchmarkRoutes';
-import rankingRoutes from './routes/rankingRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,10 +15,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
-app.use('/api/rooms', roomRoutes);
-app.use('/api/benchmarks', benchmarkRoutes);
-app.use('/api/rankings', rankingRoutes);
+app.use('/api', router);
 
 app.get('/', (req, res) => {
     res.json({ message: 'RankMe API is running', timestamp: new Date() });

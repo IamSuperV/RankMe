@@ -8,63 +8,44 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String?  @unique
-  password  String?
-  username  String?
-  guest     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id        String      @id @default(uuid())
+  email     String      @unique
+  username  String      @unique
+  password  String      // Hashed
+  createdAt DateTime    @default(now())
   scores    Score[]
-  roomsCreated Room[] @relation("RoomCreator")
-  roomMemberships RoomMember[]
+  memberships RoomMember[]
+}
 
-  @@map("users")
+model Score {
+  id        String   @id @default(uuid())
+  score     Float    // Generic value (ms, level, etc)
+  category  String   // 'REACTION_TIME', 'SEQUENCE', 'AIM'
+  rawStats  Json?    // Detailed stats
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  roomId    String?
+  room      Room?    @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Room {
-  id        String   @id @default(uuid())
-  code      String   @unique // Short code for joining
-  name      String?
-  adminId   String
-  admin     User     @relation("RoomCreator", fields: [adminId], references: [id])
-  createdAt DateTime @default(now())
-
+  id        String       @id @default(uuid())
+  code      String       @unique
+  hostId    String
   members   RoomMember[]
   scores    Score[]
-
-  @@map("rooms")
+  createdAt DateTime     @default(now())
 }
 
 model RoomMember {
   id        String   @id @default(uuid())
-  roomId    String
   userId    String
+  roomId    String
+  isAdmin   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  room      Room     @relation(fields: [roomId], references: [id])
   joinedAt  DateTime @default(now())
 
-  room      Room     @relation(fields: [roomId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([roomId, userId])
-  @@map("room_members")
-}
-
-model Score {
-  id          String   @id @default(uuid())
-  value       Float    // Normalized score (0-1000 or similar)
-  category    String   // e.g., 'REACTION_TIME', 'SEQUENCE_MEMORY'
-  rawStats    Json?    // e.g., { timeMs: 200, accuracy: 100 }
-  
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-
-  roomId      String?
-  room        Room?    @relation(fields: [roomId], references: [id])
-
-  createdAt   DateTime @default(now())
-
-  @@index([category, value(sort: Desc)]) // For global leaderboard
-  @@index([roomId, category]) // For room leaderboard
-  @@map("scores")
+  @@unique([userId, roomId])
 }
