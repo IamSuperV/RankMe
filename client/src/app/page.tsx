@@ -120,7 +120,7 @@ export default function LandingPage() {
             </section>
 
             <footer className="py-6 text-center text-sm text-muted-foreground">
-                RankMe &copy; 2026
+                RankMe &copy; 2026 - Human Benchmarking Platform
             </footer>
         </div>
     );
