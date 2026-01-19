@@ -58,7 +58,14 @@ RankMe is a competitive platform to test and track your human benchmarks, includ
       npm run dev
       ```
 
-4.  Open `http://localhost:3000` to play!
+### Deployment (Vercel)
+
+1.  Push your code to GitHub.
+2.  Import the repository in Vercel.
+3.  **Important**: In the "Project Settings" (or during import):
+    - Set the **Root Directory** to `client`.
+    - The framework should auto-detect as **Next.js**.
+4.  Deploy!
 
 ## Project Structure
 
